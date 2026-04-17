@@ -1,0 +1,118 @@
+/* ===== NATIVE MOBILE APP BEHAVIOR ===== */
+html {
+  /* Prevent overscroll bounce (native feel) */
+  overscroll-behavior: none;
+  /* Prevent pull-to-refresh */
+  overflow: hidden;
+  /* iOS safe areas */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+body {
+  /* Prevent text selection like a native app */
+  -webkit-user-select: none;
+  user-select: none;
+  /* Prevent callout on long press (iOS) */
+  -webkit-touch-callout: none;
+  /* Smooth momentum scrolling */
+  -webkit-overflow-scrolling: touch;
+  /* Prevent zoom on double tap */
+  touch-action: manipulation;
+  /* Fixed position for standalone PWA */
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Allow text selection only in message input */
+input, textarea { -webkit-user-select: text; user-select: text; }
+
+/* Native-like active/tap states */
+button:active, .channel-item:active, .dm-item:active, .friend-item:active,
+.server-icon:active, .nav-item:active, .mention-item:active, .profile-settings-item:active {
+  transform: scale(0.97);
+  opacity: 0.8;
+  transition: transform 0.05s ease, opacity 0.05s ease;
+}
+
+/* Standalone PWA status bar padding */
+@media all and (display-mode: standalone) {
+  #app { padding-top: env(safe-area-inset-top); }
+  #splash-screen { padding-top: env(safe-area-inset-top); }
+}
+
+/* ===== Reset & Base Styles ===== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-family);
+  font-size: var(--fs-md);
+  color: var(--text-primary);
+  background: var(--bg-medium);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+a { color: var(--text-link); text-decoration: none; }
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: inherit;
+  outline: none;
+}
+input, textarea {
+  font-family: inherit;
+  border: none;
+  outline: none;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+}
+ul, ol { list-style: none; }
+img { display: block; max-width: 100%; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--bg-darkest);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--bg-lighter); }
+
+/* Utility */
+.hidden { display: none !important; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); border: 0;
+}
+
+/* Typography helpers */
+.text-xs { font-size: var(--fs-xs); }
+.text-sm { font-size: var(--fs-sm); }
+.text-md { font-size: var(--fs-md); }
+.text-lg { font-size: var(--fs-lg); }
+.text-xl { font-size: var(--fs-xl); }
+.text-muted { color: var(--text-muted); }
+.text-secondary { color: var(--text-secondary); }
+.text-bold { font-weight: var(--fw-bold); }
+.text-semibold { font-weight: var(--fw-semibold); }
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

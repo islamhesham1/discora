@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="Discord-like mobile messaging app with servers, channels, and real-time chat">
+  <meta name="theme-color" content="#202225">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <title>Discora - Chat & Connect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css?v=3">
+  <link rel="stylesheet" href="css/base.css?v=3">
+  <link rel="stylesheet" href="css/layout.css?v=3">
+  <link rel="stylesheet" href="css/components.css?v=3">
+  <link rel="stylesheet" href="css/animations.css?v=3">
+</head>
+<body>
+<div id="app" style="position:fixed;top:0;left:0;right:0;bottom:0;overflow:hidden;background:#36393f;">
+  <!-- Splash Screen -->
+  <div id="splash-screen">
+    <div class="splash-logo" style="font-size:64px;margin-bottom:24px;">💬</div>
+    <div style="font-size:24px;font-weight:700;color:#fff;margin-bottom:8px;">Discora</div>
+    <div style="font-size:13px;color:#96989d;margin-bottom:24px;">Connecting you with friends</div>
+    <div class="spinner"></div>
+  </div>
+
+  <!-- ======= BOTTOM NAVIGATION (FIRST in DOM for fixed bottom) ======= -->
+  <nav id="bottom-nav" style="position:absolute;bottom:0;left:0;right:0;height:56px;background:#202225;display:flex;align-items:center;z-index:30;border-top:1px solid rgba(0,0,0,0.3);padding:0 8px;">
+    <button class="nav-item active" data-tab="home" id="nav-home">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Servers</span>
+    </button>
+    <button class="nav-item" data-tab="friends" id="nav-friends">
+      <span class="nav-icon">💬</span>
+      <span class="nav-label">Messages</span>
+    </button>
+    <button class="nav-item" data-tab="search" id="nav-search">
+      <span class="nav-icon">🔍</span>
+      <span class="nav-label">Search</span>
+    </button>
+    <button class="nav-item" data-tab="mentions" id="nav-mentions">
+      <span class="nav-icon">@</span>
+      <span class="nav-label">Mentions</span>
+      <span class="nav-badge hidden" id="nav-mentions-badge">0</span>
+    </button>
+    <button class="nav-item" data-tab="profile" id="nav-profile">
+      <span class="nav-icon">👤</span>
+      <span class="nav-label">You</span>
+    </button>
+  </nav>
+
+  <!-- Main App Container (content area above the nav) -->
+  <div id="app-container" style="position:absolute;top:0;left:0;right:0;bottom:56px;overflow:hidden;">
+
+    <!-- ======= HOME TAB (Servers) ======= -->
+    <div id="home-tab" class="tab-view active">
+      <div id="servers-panel">
+        <div id="server-bar"></div>
+        <div id="channel-panel">
+          <div id="channel-header">Gaming Hub</div>
+          <div id="channel-list"></div>
+          <div id="user-area"></div>
+        </div>
+      </div>
+      <!-- Chat View (slides over) -->
+      <div id="chat-view">
+        <div id="chat-header">
+          <button id="chat-back" title="Back">←</button>
+          <div id="chat-channel-info">
+            <div id="chat-channel-name"><span class="hash">#</span> general</div>
+          </div>
+          <button id="chat-search-btn" style="color:var(--text-secondary);font-size:18px;">🔍</button>
+          <button id="chat-more-btn" style="color:var(--text-secondary);font-size:18px;">⋯</button>
+        </div>
+        <div id="messages-container"></div>
+        <div id="typing-indicator">
+          <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+          <span>Someone is typing...</span>
+        </div>
+        <div id="message-input-area">
+          <div id="message-input-wrapper">
+            <button class="input-btn" id="attach-btn" title="Attach">+</button>
+            <input type="text" id="message-input" placeholder="Message #general" autocomplete="off">
+            <button class="input-btn" id="emoji-btn" title="Emoji">😀</button>
+            <button class="input-btn hidden" id="send-btn" title="Send">➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======= FRIENDS / MESSAGES TAB ======= -->
+    <div id="friends-tab" class="tab-view">
+      <div class="tab-header">Messages</div>
+      <div class="tab-content" id="friends-content"></div>
+      <!-- DM Chat View -->
+      <div id="dm-chat-view">
+        <div class="dm-chat-header">
+          <button id="dm-chat-back" title="Back">←</button>
+          <div style="flex:1;">
+            <div class="dm-chat-header-name"></div>
+          </div>
+          <button style="color:var(--text-secondary);font-size:18px;">📞</button>
+          <button style="color:var(--text-secondary);font-size:18px;">📹</button>
+        </div>
+        <div class="dm-messages-container"></div>
+        <div class="dm-input-area">
+          <div class="dm-input-wrapper">
+            <button class="input-btn">+</button>
+            <input type="text" id="dm-message-input" placeholder="Message" autocomplete="off">
+            <button class="input-btn">😀</button>
+            <button class="input-btn" id="dm-send-btn">➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======= SEARCH TAB ======= -->
+    <div id="search-tab" class="tab-view">
+      <div class="tab-header">Search</div>
+      <div class="tab-content" id="search-content"></div>
+    </div>
+
+    <!-- ======= MENTIONS TAB ======= -->
+    <div id="mentions-tab" class="tab-view">
+      <div class="tab-header">Mentions</div>
+      <div class="tab-content" id="mentions-content"></div>
+    </div>
+
+    <!-- ======= PROFILE TAB ======= -->
+    <div id="profile-tab" class="tab-view">
+      <div class="tab-header">You</div>
+      <div class="tab-content" id="profile-content"></div>
+    </div>
+
+  </div>
+
+  <!-- Emoji Picker -->
+  <div id="emoji-picker"></div>
+
+  <!-- User Popup -->
+  <div id="user-popup"></div>
+
+  <!-- Overlay -->
+  <div id="overlay"></div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/components.js"></script>
+<script src="js/animations.js"></script>
+<script src="js/app.js"></script>
+<script>
+  // Register Service Worker for PWA
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.log('SW failed:', err));
+  }
+
+  // Handle PWA install prompt
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Show install banner after splash
+    setTimeout(() => {
+      if (deferredPrompt) showInstallBanner();
+    }, 3000);
+  });
+
+  function showInstallBanner() {
+    const banner = document.createElement('div');
+    banner.id = 'install-banner';
+    banner.innerHTML = `
+      <div style="position:fixed;bottom:70px;left:12px;right:12px;background:var(--blurple);color:#fff;padding:14px 18px;border-radius:12px;display:flex;align-items:center;gap:12px;z-index:100;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:slideInUp .4s ease">
+        <span style="font-size:28px">📲</span>
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:15px">Install Discora</div>
+          <div style="font-size:12px;opacity:.85">Add to home screen for the full app experience</div>
+        </div>
+        <button onclick="installApp()" style="background:#fff;color:var(--blurple);border:none;padding:8px 16px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer">Install</button>
+        <button onclick="this.parentElement.remove()" style="color:#fff;background:none;border:none;font-size:18px;cursor:pointer;padding:4px">✕</button>
+      </div>
+    `;
+    document.body.appendChild(banner);
+  }
+
+  async function installApp() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    const banner = document.getElementById('install-banner');
+    if (banner) banner.remove();
+  }
+</script>
+</body>
+</html>
