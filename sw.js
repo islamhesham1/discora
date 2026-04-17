@@ -1,24 +1,10 @@
-const CACHE_NAME = 'discora-v1';
-const ASSETS = [
-  '/',
-  '/index.html',
-  '/css/variables.css',
-  '/css/base.css',
-  '/css/layout.css',
-  '/css/components.css',
-  '/css/animations.css',
-  '/js/data.js',
-  '/js/utils.js',
-  '/js/components.js',
-  '/js/animations.js',
-  '/js/app.js',
-  '/manifest.json'
-];
+const CACHE_NAME = 'discora-v2';
+const BASE = self.registration.scope;
 
-// Install - cache all assets
+// Install - cache the main page
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then(cache => cache.add(BASE))
   );
   self.skipWaiting();
 });
@@ -33,9 +19,18 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
-// Fetch - serve from cache, fallback to network
+// Fetch - cache-first for same-origin, network-first otherwise
 self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request))
-  );
+  if (e.request.url.startsWith(self.location.origin)) {
+    e.respondWith(
+      caches.match(e.request).then(cached => {
+        const fetched = fetch(e.request).then(response => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+          return response;
+        });
+        return cached || fetched;
+      })
+    );
+  }
 });
